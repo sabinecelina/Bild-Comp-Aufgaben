@@ -8,8 +8,8 @@ width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 
 print("height : ", height)
 print("width: ", width)
-
-while(foundCorners):
+foundCorners = 0
+while(foundCorners == 0):
     ret, img = cap.read()
     if(ret):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
