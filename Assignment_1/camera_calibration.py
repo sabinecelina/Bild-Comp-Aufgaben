@@ -9,12 +9,12 @@ width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 print("height : ", height)
 print("width: ", width)
 
-while(ret):
+while(foundCorners):
     ret, img = cap.read()
     if(ret):
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         cv2.imshow("webcam", gray)
-        ret, corners = cv2.findChessboardCorners(gray, (7,6), None)
+        foundCorners, corners = cv2.findChessboardCorners(gray, (7,6), None)
 
 
 cap.release()
