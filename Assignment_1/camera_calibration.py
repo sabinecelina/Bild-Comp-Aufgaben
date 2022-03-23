@@ -13,14 +13,16 @@ print("height : ", height)
 print("width: ", width)
 
 while(True):
-    img = cap.read()
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    # Find the chess board corners
-    ret, corners = cv2.findChessboardCorners(gray, (7,6), None)
-    # ret is a boolean that returns true if the frame is available.
-    # frame is an image array vector captured based on the default frames per second defined explicitly or implicitly
-    if(ret):    
-        print("yes")
+    ret, img = cap.read()
+    if(ret):
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        cv2.imshow("webcam", gray)
+        # Find the chess board corners
+        ret, corners = cv2.findChessboardCorners(gray, (7,6), None)
+        # ret is a boolean that returns true if the frame is available.
+        # frame is an image array vector captured based on the default frames per second defined explicitly or implicitly
+        if(ret):    
+            print("yes")
     if cv2.waitKey(10) == ord('q'):
         break
   
