@@ -9,6 +9,7 @@ width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 print("height : ", height)
 print("width: ", width)
 foundCorners = 0
+#true hahahaha
 while(True):
     ret, img = cap.read()
     if(ret):
