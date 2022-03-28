@@ -1,30 +1,26 @@
 import numpy as np
 import cv2 
 import glob
-# cap = cv2.VideoCapture(0)
 
-# height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-# width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+cap = cv2.VideoCapture(0)
+height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 
-# print("height : ", height)
-# print("width: ", width)
-
-# #true hahahaha
-# i = 0
-# while(i < 10):
-#     ret, img = cap.read()
-#     if(ret):
-#         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-#         cv2.imshow("webcam", gray)
-#         foundCorners, corners = cv2.findChessboardCorners(gray, (7,6), None)
-#         if(foundCorners):
-#             cv2.imwrite("Assignment_1/images/picture_"+ str(i) +".png", gray)
-#             cv2.waitKey(3000)
-#             i+=1
-#     cv2.waitKey(10)
+i = 0
+while(i < 10):
+    ret, img = cap.read()
+    if(ret):
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        cv2.imshow("webcam", gray)
+        foundCorners, corners = cv2.findChessboardCorners(gray, (7,6), None)
+        if(foundCorners):
+            cv2.imwrite("Assignment_1/images/picture_"+ str(i) +".png", gray)
+            cv2.waitKey(0)
+            i+=1
+    cv2.waitKey(1)
     
-# cap.release()
-# cv2.destroyAllWindows()
+cap.release()
+cv2.destroyAllWindows()
 
 # termination criteria
 criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
