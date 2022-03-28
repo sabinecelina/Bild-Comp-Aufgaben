@@ -35,7 +35,7 @@ objp[:,:2] = np.mgrid[0:7,0:6].T.reshape(-1,2)
 objpoints = [] # 3d point in real world space
 imgpoints = [] # 2d points in image plane.
 
-images = glob.glob('*.png')
+images = glob.glob('Assignment_1/images/*.png')
 print(images)
 
 for fname in images:
