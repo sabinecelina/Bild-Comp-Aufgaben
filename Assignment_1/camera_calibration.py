@@ -15,7 +15,7 @@ while(i < 10):
         foundCorners, corners = cv2.findChessboardCorners(gray, (7,6), None)
         if(foundCorners):
             cv2.imwrite("Assignment_1/images/picture_"+ str(i) +".png", gray)
-            cv2.waitKey(0)
+            cv2.waitKey(5000)
             i+=1
     cv2.waitKey(1)
     
