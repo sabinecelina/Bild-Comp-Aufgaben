@@ -36,10 +36,8 @@ def findChessboardCorners():
     # Arrays to store object points and image points from all the images.
     objpoints = [] # 3d point in real world space
     imgpoints = [] # 2d points in image plane.
-
     images = glob.glob('Assignment_1/images/*.png')
     print(images)
-
     for fname in images:
         img = cv2.imread(fname)
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -53,7 +51,18 @@ def findChessboardCorners():
             # Draw and display the corners
             cv2.drawChessboardCorners(img, (chessboardWidth,chessboardHeight), corners2, ret)
             cv2.imshow('img', img)
-            cv2.waitKey(5000)
+            cv2.waitKey(2000)
     cv2.destroyAllWindows()
+    return objpoints, imgpoints, gray
 
-findChessboardCorners()
+objpoints, imgpoints, gray = findChessboardCorners()
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+img = cv2.imread('left12.jpg')
+h,  w = img.shape[:2]
+newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
+# undistort
+dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
+# crop the image
+x, y, w, h = roi
+dst = dst[y:y+h, x:x+w]
+cv2.imwrite('calibresult.png', dst)
