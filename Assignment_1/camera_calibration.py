@@ -50,7 +50,7 @@ def find_chessboard_corners():
     # Arrays to store object points and image points from all the images.
     obj_points = []  # 3d point in real world space
     img_points = []  # 2d points in image plane.
-    images = glob.glob('Assignment_1/images/*.png')
+    images = glob.glob('images/*.png')
     print(images)
     gray_img = 0
     for frame in images:
@@ -62,6 +62,7 @@ def find_chessboard_corners():
         if ret:
             obj_points.append(objp)
             corners2 = cv2.cornerSubPix(gray_img, corners, (11, 11), (-1, -1), criteria)
+            print(corners2)
             img_points.append(corners)
             # Draw and display the corners
             cv2.drawChessboardCorners(img, (chessboardWidth, chessboardHeight), corners2, ret)
