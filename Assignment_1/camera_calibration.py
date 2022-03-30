@@ -2,18 +2,22 @@ import numpy as np
 import cv2 
 import glob
 
+chessboardWidth = 9
+chessboardHeight = 6
+maxImageCount = 10
+
 def capturePictures():
     cap = cv2.VideoCapture(0)
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 
     i = 0
-    while(i < 10):
+    while(i < maxImageCount):
         ret, img = cap.read()
         if(ret):
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             cv2.imshow("webcam", gray)
-            foundCorners, corners = cv2.findChessboardCorners(gray, (7,6), None)
+            foundCorners, corners = cv2.findChessboardCorners(gray, (chessboardWidth,chessboardHeight), None)
             if(foundCorners):
                 cv2.imwrite("Assignment_1/images/picture_"+ str(i) +".png", gray)
                 cv2.waitKey(5000)
@@ -25,8 +29,6 @@ def capturePictures():
 
 def findChessboardCorners():
     # termination criteria
-    chessboardWidth = 9
-    chessboardHeight = 6
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
     # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
     objp = np.zeros((chessboardHeight*chessboardWidth,3), np.float32)
