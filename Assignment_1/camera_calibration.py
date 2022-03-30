@@ -4,7 +4,7 @@ import glob
 
 chessboardWidth = 4
 chessboardHeight = 5
-maxImageCount = 3
+maxImageCount = 10
 
 def capturePictures():
     cap = cv2.VideoCapture(0)
@@ -74,8 +74,16 @@ def findChessboardCorners():
     return objpoints, imgpoints, gray
 
 # capturePictures()
-# objpoints, imgpoints, gray = findChessboardCorners()
-# ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+objpoints, imgpoints, gray = findChessboardCorners()
+ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+print("camera matrix: \n ", mtx)
+print("distortion coefficients: ", dist)
+
+for i in range(len(rvecs)):
+    print("parameters for image: ", i, ": \n")
+    print("rotation vector: \n", rvecs[i])
+    print("translation vector: \n", tvecs[i])
+
 # img = cv2.imread('Assignment_1/images/picture_9.png')
 # h,  w = img.shape[:2]
 # newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
