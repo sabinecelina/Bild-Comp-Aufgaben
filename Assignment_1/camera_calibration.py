@@ -25,7 +25,7 @@ def capturePictures():
     print('  Zoom = ' + str(zoom))
     print('  Focus = ' + str(focus))
 
-    if(autofocus == -1):
+    if(autofocus != -1):
         cap.set(cv2.CAP_PROP_AUTOFOCUS, 0) # turn the autofocus off 
 
     i = 0
@@ -73,6 +73,28 @@ def findChessboardCorners():
     cv2.destroyAllWindows()
     return objpoints, imgpoints, gray
 
+
+def undistore_live_cam(mtx, dist):
+    cap = cv2.VideoCapture(0)
+    while True:
+    # read one video frame
+        ret, frame = cap.read()
+        if (ret):
+            h, w = frame.shape[:2]
+            newcameramtx, roi = cv2.getOptimalNewCameraMatrix (mtx, dist, (w,h), 1, (w,h))   
+            dst = cv2.undistort(frame, mtx, dist, None, newcameramtx)
+            x, y, w, h = roi
+            dst = dst[y:y+h, x:x+w]
+            cv2.imshow('video image', dst)
+            if cv2.waitKey(10) == ord('q'):
+             break
+        else:
+            print('Error reading frame')
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
+
 # capturePictures()
 objpoints, imgpoints, gray = findChessboardCorners()
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
@@ -84,12 +106,4 @@ for i in range(len(rvecs)):
     print("rotation vector: \n", rvecs[i])
     print("translation vector: \n", tvecs[i])
 
-# img = cv2.imread('Assignment_1/images/picture_9.png')
-# h,  w = img.shape[:2]
-# newcameramtx, roi = cv2.getOptimalNewCameraMatrix(mtx, dist, (w,h), 1, (w,h))
-# # undistort
-# dst = cv2.undistort(img, mtx, dist, None, newcameramtx)
-# # crop the image
-# x, y, w, h = roi
-# dst = dst[y:y+h, x:x+w]
-# cv2.imwrite('Assignment_1/images/calibresult.png', dst)
+undistore_live_cam(mtx, dist)
