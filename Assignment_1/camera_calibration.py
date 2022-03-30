@@ -55,6 +55,7 @@ def findChessboardCorners():
     cv2.destroyAllWindows()
     return objpoints, imgpoints, gray
 
+#capturePictures()
 objpoints, imgpoints, gray = findChessboardCorners()
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 img = cv2.imread('Assignment_1/images/picture_9.png')
