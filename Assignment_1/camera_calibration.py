@@ -106,4 +106,12 @@ for i in range(len(rvecs)):
     print("rotation vector: \n", rvecs[i])
     print("translation vector: \n", tvecs[i])
 
-undistore_live_cam(mtx, dist)
+# project objectpoints with calculated cameramatrix and calculate the distances between localised and reprojected points
+mean_error = 0
+for i in range(len(objpoints)):
+    imgpoints2, _ = cv2.projectPoints(objpoints[i], rvecs[i], tvecs[i], mtx, dist)
+    error = cv2.norm(imgpoints[i], imgpoints2, cv2.NORM_L2)/len(imgpoints2)
+    mean_error += error
+print( "total error: {}".format(mean_error/len(objpoints)) )
+
+# undistore_live_cam(mtx, dist)
