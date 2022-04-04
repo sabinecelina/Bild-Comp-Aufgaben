@@ -42,28 +42,26 @@ def capturePictures():
     cv2.destroyAllWindows()
 
 
+# inspiriert von https://docs.opencv.org/4.5.5/dc/dbb/tutorial_py_calibration.html
 def find_chessboard_corners():
-    # termination criteria
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    # prepare object points, like (0,0,0), (1,0,0), (2,0,0) ....,(6,5,0)
     objp = np.zeros((chessboardHeight * chessboardWidth, 3), np.float32)
     objp[:, :2] = np.mgrid[0:chessboardWidth, 0:chessboardHeight].T.reshape(-1, 2)
-    # Arrays to store object points and image points from all the images.
-    obj_points = []  # 3d point in real world space
-    img_points = []  # 2d points in image plane.
+    print(objp)
+    obj_points = []
+    img_points = []
     images = glob.glob('images/*.png')
-    print(images)
     gray_img = 0
     for frame in images:
         img = cv2.imread(frame)
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # Find the chess board corners
         ret, corners = cv2.findChessboardCorners(gray_img, (chessboardWidth, chessboardHeight), None)
-        # If found, add object points, image points (after refining them)
         if ret:
+            print("+++++++++++++++++++++++++++++")
+            print("+++++++++++++++++++++++++++++")
+            print(objp)
             obj_points.append(objp)
             corners2 = cv2.cornerSubPix(gray_img, corners, (11, 11), (-1, -1), criteria)
-            print(corners2)
             img_points.append(corners)
             # Draw and display the corners
             cv2.drawChessboardCorners(img, (chessboardWidth, chessboardHeight), corners2, ret)
@@ -73,6 +71,7 @@ def find_chessboard_corners():
     return obj_points, img_points, gray_img
 
 
+# inspiriert von https://docs.opencv.org/4.5.5/dc/dbb/tutorial_py_calibration.html
 def undistorted_live_cam(mtx, dist):
     cap = cv2.VideoCapture(0)
     while True:
@@ -101,7 +100,7 @@ ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(object_points, image_points, 
 print("camera matrix: \n ", mtx)
 print("distortion coefficients: ", dist)
 for i in range(len(rvecs)):
-    print("\n parameters for image ", i, ": \n")
+    print("\n parameters for image ", i + 1, ": \n")
     print("rotation vector: \n", rvecs[i])
     print("translation vector: \n", tvecs[i])
 
@@ -110,6 +109,9 @@ mean_error = 0
 for i in range(len(object_points)):
     imgpoints2, _ = cv2.projectPoints(object_points[i], rvecs[i], tvecs[i], mtx, dist)
     error = cv2.norm(image_points[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)
+    print(error)
+    error = error * 0.922 / 1000
+    print(error, " after pixelpitch")
     mean_error += error
 print("total error: {}".format(mean_error / len(object_points)))
 
