@@ -66,7 +66,7 @@ def find_chessboard_corners():
             # Draw and display the corners
             cv2.drawChessboardCorners(img, (chessboardWidth, chessboardHeight), corners2, ret)
             cv2.imshow('img', img)
-            cv2.waitKey(2000)
+            cv2.waitKey(2)
     cv2.destroyAllWindows()
     return obj_points, img_points, gray_img
 
@@ -110,8 +110,6 @@ for i in range(len(object_points)):
     imgpoints2, _ = cv2.projectPoints(object_points[i], rvecs[i], tvecs[i], mtx, dist)
     error = cv2.norm(image_points[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)
     print(error)
-    error = error * 0.922 / 1000
-    print(error, " after pixelpitch")
     mean_error += error
 print("total error: {}".format(mean_error / len(object_points)))
 
