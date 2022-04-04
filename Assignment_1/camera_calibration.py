@@ -30,6 +30,7 @@ def capturePictures():
     for x in range(maxImageCount):
         ret, img = cap.read()
         if ret:
+            # findChessboardCorners needs a grayscale image
             gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
             cv2.imshow("webcam", gray_img)
             found_corners, corners = cv2.findChessboardCorners(gray_img, (chessboardWidth, chessboardHeight), None)
@@ -100,7 +101,7 @@ ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(object_points, image_points, 
 print("camera matrix: \n ", mtx)
 print("distortion coefficients: ", dist)
 for i in range(len(rvecs)):
-    print("parameters for image: ", i, ": \n")
+    print("\n parameters for image ", i, ": \n")
     print("rotation vector: \n", rvecs[i])
     print("translation vector: \n", tvecs[i])
 
