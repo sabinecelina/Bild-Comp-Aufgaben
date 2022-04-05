@@ -57,9 +57,6 @@ def find_chessboard_corners():
         gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         ret, corners = cv2.findChessboardCorners(gray_img, (chessboardWidth, chessboardHeight), None)
         if ret:
-            print("+++++++++++++++++++++++++++++")
-            print("+++++++++++++++++++++++++++++")
-            print(objp)
             obj_points.append(objp)
             corners2 = cv2.cornerSubPix(gray_img, corners, (11, 11), (-1, -1), criteria)
             img_points.append(corners)
@@ -74,6 +71,7 @@ def find_chessboard_corners():
 # inspiriert von https://docs.opencv.org/4.5.5/dc/dbb/tutorial_py_calibration.html
 def undistorted_live_cam(mtx, dist):
     cap = cv2.VideoCapture(0)
+    check = False
     while True:
         # read one video frame
         ret, frame = cap.read()
@@ -83,7 +81,11 @@ def undistorted_live_cam(mtx, dist):
             dst = cv2.undistort(frame, mtx, dist, None, new_camera_mtx)
             x, y, w, h = roi
             dst = dst[y:y + h, x:x + w]
-            cv2.imshow('video image', dst)
+            if cv2.waitKey(10) == ord('u'):
+                check = not check
+            if check:
+                frame = dst
+            cv2.imshow('video image', frame)
             if cv2.waitKey(10) == ord('q'):
                 break
         else:
@@ -109,8 +111,8 @@ mean_error = 0
 for i in range(len(object_points)):
     imgpoints2, _ = cv2.projectPoints(object_points[i], rvecs[i], tvecs[i], mtx, dist)
     error = cv2.norm(image_points[i], imgpoints2, cv2.NORM_L2) / len(imgpoints2)
-    print(error)
+    print("error for image ", i + 1, ": ", error)
     mean_error += error
-print("total error: {}".format(mean_error / len(object_points)))
+print("mean error: {}".format(mean_error / len(object_points)))
 
-# undistorted_live_cam(mtx, dist)
+undistorted_live_cam(mtx, dist)
