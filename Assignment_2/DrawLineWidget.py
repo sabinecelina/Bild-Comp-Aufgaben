@@ -8,7 +8,6 @@ class DrawLineWidget(object):
         self.image_coordinates = []
         self.line_coordinates = []
         self.drawingLine = False
-
         cv2.namedWindow('image')
         cv2.setMouseCallback('image', self.eventHandler)
 
