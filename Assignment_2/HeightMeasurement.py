@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
 
-class DrawLineWidget(object):
+class HeightMeasurement(object):
     def __init__(self, path):
         self.mainImage = cv2.resize(cv2.imread(path), dsize=(0,0), fx=0.4, fy=0.4)
         self.editImage = self.mainImage.copy()
@@ -36,8 +36,19 @@ class DrawLineWidget(object):
             case cv2.EVENT_MOUSEMOVE:
                 self.onMouseMove(x, y)
 
-    def getImage(self):
-        return self.editImage
+    def findHorizen(self):
+        while True:
+            cv2.imshow('image', self.editImage)
+            cv2.waitKey(1)
+            if len(self.line_coordinates) == 4:
+                break
+            
+    def findVanishingPoint(self):
+        while True:
+            cv2.imshow('image', self.editImage)
+            cv2.waitKey(1)
+            if len(self.line_coordinates) == 4:
+                break
 
-    def getLines(self):
-        return self.line_coordinates
+if __name__ == '__main__':
+    draw_line_widget = HeightMeasurement('images/table_bottle_01.jpg')
