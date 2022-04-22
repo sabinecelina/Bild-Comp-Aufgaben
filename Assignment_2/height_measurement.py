@@ -1,10 +1,10 @@
 import numpy as np
 import cv2
 from math import *
-from DrawLineWidget import DrawLineWidget
+from HeightMeasurement import HeightMeasurement
 
 if __name__ == '__main__':
-    draw_line_widget = DrawLineWidget('images/table_bottle_01.jpg')
+    draw_line_widget = HeightMeasurement('images/table_bottle_01.jpg')
     while True:
         cv2.imshow('image', draw_line_widget.getImage())
         cv2.waitKey(1)
