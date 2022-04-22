@@ -1,11 +1,13 @@
+from tkinter import Image
 import numpy as np
 import cv2
 from math import *
 import operator
 
 class DrawLineWidget(object):
-    def __init__(self, path):
-        self.mainImage = cv2.resize(cv2.imread(path), dsize=(0,0), fx=0.4, fy=0.4)
+    def __init__(self, image, scale = 1):
+        self.lineColor = (0,0,0)
+        self.mainImage = cv2.resize(image, dsize=(0,0), fx=scale, fy=scale)
         self.editImage = self.mainImage.copy()
         self.image_coordinates = []
         self.line_coordinates = []
@@ -17,7 +19,7 @@ class DrawLineWidget(object):
         match self.drawingLine:
             case True:
                 self.image_coordinates.append((x,y))
-                cv2.line(self.editImage, self.image_coordinates[0], self.image_coordinates[1], (36,255,12), 2)
+                cv2.line(self.editImage, self.image_coordinates[0], self.image_coordinates[1], self.lineColor, 2)
                 self.line_coordinates.append(self.image_coordinates)
                 self.mainImage = self.editImage
                 self.drawingLine = False
@@ -28,7 +30,7 @@ class DrawLineWidget(object):
     def onMouseMove(self, x, y):
         if self.drawingLine:
             self.editImage = self.mainImage.copy()
-            cv2.line(self.editImage, self.image_coordinates[0], (x, y), (36,255,12), 2)
+            cv2.line(self.editImage, self.image_coordinates[0], (x, y), self.lineColor, 2)
 
     def eventHandler(self, event, x, y, flags, parameters):
         match event:
@@ -36,6 +38,9 @@ class DrawLineWidget(object):
                 self.onMouseClick(x, y)
             case cv2.EVENT_MOUSEMOVE:
                 self.onMouseMove(x, y)
+    
+    def setLineColor(self, color):
+        self.lineColor = color
 
     def getImage(self):
         return self.editImage
@@ -48,12 +53,40 @@ def getIntersectionPoint(pointA1, pointB1, pointA2, pointB2):
     intersection_point = intersection_point / intersection_point[2]
     return (round(intersection_point[0]), round(intersection_point[1]))
 
+def getImageWithVanishingPoints(image, vanishing_points):
+    height, width, _ = image.shape
+    min_world_x = min(min(vanishing_points)[0], 0)
+    max_world_x = max(max(vanishing_points)[0], width)
+    min_world_y = min(min(vanishing_points, key=lambda x: x[1])[1], 0)
+    max_world_y = max(max(vanishing_points, key=lambda x: x[1])[1], height)
+    border = 50
+    world_width = max_world_x - min_world_x + (border*2)
+    world_height = max_world_y - min_world_y + (border*2)
+    world_img = np.zeros((world_height, world_width, 3), np.uint8)
+
+    origin = (abs(min_world_x) + border, abs(min_world_y) + border)
+    v_x = tuple(map(operator.add, vanishing_points[0], origin))
+    v_y = tuple(map(operator.add, vanishing_points[1], origin))
+
+    world_img[origin[1]:origin[1]+height, origin[0]:origin[0]+width, :] = image
+    cv2.circle(world_img, v_x, 20, (255, 0, 255), -1)
+    cv2.circle(world_img, v_y, 10, (0, 0, 255), -1)
+    cv2.line(world_img, v_x, v_y, (0, 0, 255), 3, cv2.LINE_AA)
+    cv2.circle(world_img, v_x, 20, (255, 0, 255), -1)
+    cv2.circle(world_img, v_y, 10, (0, 0, 255), -1)
+    cv2.line(world_img, v_x, v_y, (0, 0, 255), 3, cv2.LINE_AA)
+
+    return world_img, v_x, v_y
+
 
 if __name__ == '__main__':
-    draw_line_widget = DrawLineWidget('images/table_bottle_01.jpg')
+    draw_line_widget = DrawLineWidget(cv2.imread('images/table_bottle_01.jpg'), scale = 0.4)
+    draw_line_widget.setLineColor((255,50,0))
     while True:
         cv2.imshow('image', draw_line_widget.getImage())
         cv2.waitKey(1)
+        if len(draw_line_widget.getLines()) == 2:
+            draw_line_widget.setLineColor((50,255,0))
         if len(draw_line_widget.getLines()) == 4:
             break
     lines = draw_line_widget.getLines()
@@ -70,24 +103,39 @@ if __name__ == '__main__':
     point2 = getIntersectionPoint(A1, B1, A2, B2)
 
     vanishing_points = [point1, point2]
+    world_img, v_x, v_y = getImageWithVanishingPoints(draw_line_widget.getImage(), vanishing_points)
 
-    height, width, _ = draw_line_widget.getImage().shape
-    min_world_x = min(min(vanishing_points)[0], 0)
-    max_world_x = max(max(vanishing_points)[0], width)
-    min_world_y = min(min(vanishing_points, key=lambda x: x[1])[1], 0)
-    max_world_y = max(max(vanishing_points, key=lambda x: x[1])[1], height)
-    border = 50
-    world_width = max_world_x - min_world_x + (border*2)
-    world_height = max_world_y - min_world_y + (border*2)
-    world_img = np.zeros((world_height, world_width, 3), np.uint8)
-
-    origin = (abs(min_world_x) + border, abs(min_world_y) + border)
-    vanishing_point1 = tuple(map(operator.add, vanishing_points[0], origin))
-    vanishing_point2 = tuple(map(operator.add, vanishing_points[1], origin))
-    
-    world_img[origin[1]:origin[1]+height, origin[0]:origin[0]+width, :] = draw_line_widget.getImage()
-    cv2.circle(world_img, vanishing_point1, 20, (255, 0, 255), -1)
-    cv2.circle(world_img, vanishing_point2, 10, (0, 0, 255), -1)
-    cv2.line(world_img, vanishing_point1, vanishing_point2, (0, 0, 255), 3, cv2.LINE_AA)
     cv2.imshow('image', world_img)
     cv2.waitKey(0)
+    cv2.destroyAllWindows
+
+    draw_line_widget = DrawLineWidget(world_img)
+    draw_line_widget.setLineColor((50,50,255))
+    while True:
+        cv2.imshow('image', draw_line_widget.getImage())
+        cv2.waitKey(1)
+        if len(draw_line_widget.getLines()) == 1:
+            draw_line_widget.setLineColor((30,100,200))
+        if len(draw_line_widget.getLines()) == 2:
+            break
+    lines = draw_line_widget.getLines()
+
+    b = np.array([lines[0][0][0],lines[0][0][1],1])
+    r = np.array([lines[0][1][0],lines[0][1][1],1])
+    b_0 = np.array([lines[1][0][0],lines[1][0][1],1])
+    t_0 = np.array([lines[1][1][0],lines[1][1][1],1])
+    v_x = np.array([v_x[0],v_x[1],1])
+    v_y = np.array([v_y[0],v_y[1],1])
+
+    v = np.cross(np.cross(b, b_0), np.cross(v_x, v_y))
+    v = v / v[2]
+    t = np.cross(np.cross(v, t_0), np.cross(r, b))
+    t = t / t[2]
+    t = (round(t[0]),round(t[1]))
+    cv2.destroyAllWindows
+    image = draw_line_widget.getImage()
+    cv2.circle(image, t, 10, (0, 0, 255), -1)
+    cv2.imshow('image', image)
+    cv2.waitKey(0)
+
+    cv2.destroyAllWindows
