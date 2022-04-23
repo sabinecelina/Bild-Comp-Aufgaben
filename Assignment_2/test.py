@@ -78,6 +78,10 @@ def getImageWithVanishingPoints(image, vanishing_points):
 
     return world_img, v_x, v_y
 
+def getDistance(point1, point2):
+    difference = np.array((point2[0] - point1[0], point2[1] - point1[1]))
+    return np.linalg.norm(difference)
+
 
 if __name__ == '__main__':
     draw_line_widget = DrawLineWidget(cv2.imread('images/table_bottle_01.jpg'), scale = 0.4)
@@ -131,9 +135,20 @@ if __name__ == '__main__':
     v = v / v[2]
     t = np.cross(np.cross(v, t_0), np.cross(r, b))
     t = t / t[2]
+
+    H = getDistance(b, t)
+    R = getDistance(b, r)
+
+    image_cross_ratio = H/R
+
+    print(image_cross_ratio * 26)
+
     t = (round(t[0]),round(t[1]))
     cv2.destroyAllWindows
     image = draw_line_widget.getImage()
+
+
+
     cv2.circle(image, t, 10, (0, 0, 255), -1)
     cv2.imshow('image', image)
     cv2.waitKey(0)
