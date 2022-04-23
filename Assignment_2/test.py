@@ -109,10 +109,6 @@ if __name__ == '__main__':
     vanishing_points = [point1, point2]
     world_img, v_x, v_y = getImageWithVanishingPoints(draw_line_widget.getImage(), vanishing_points)
 
-    cv2.imshow('image', world_img)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows
-
     draw_line_widget = DrawLineWidget(world_img)
     draw_line_widget.setLineColor((50,50,255))
     while True:
