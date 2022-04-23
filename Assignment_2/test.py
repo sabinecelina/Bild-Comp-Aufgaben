@@ -136,12 +136,14 @@ if __name__ == '__main__':
     t = np.cross(np.cross(v, t_0), np.cross(r, b))
     t = t / t[2]
 
-    H = getDistance(b, t)
-    R = getDistance(b, r)
+    h_ = getDistance(b, t)
+    r_ = getDistance(b, r)
 
-    image_cross_ratio = H/R
+    image_cross_ratio = h_ / r_
 
-    print(image_cross_ratio * 26)
+    print(h_, r_)
+    print(image_cross_ratio)
+    print(26/image_cross_ratio)
 
     t = (round(t[0]),round(t[1]))
     cv2.destroyAllWindows
