@@ -48,8 +48,15 @@ class DrawLineWidget(object):
         return self.line_coordinates
 
 
-def get_intersection_point(pointA1, pointB1, pointA2, pointB2):
-    intersection_point = np.cross(np.cross(A1, B1), np.cross(A2, B2))
+def standardization_vector(m):
+    y = 0
+    if m[-1] != 0:
+        y = m / m[-1]
+    return y
+
+
+def get_intersection_point(points):
+    intersection_point = np.cross(np.cross(points[0], points[1]), np.cross(points[2], points[3]))
     intersection_point = intersection_point / intersection_point[2]
     return round(intersection_point[0]), round(intersection_point[1])
 
@@ -85,8 +92,7 @@ def get_distance(point1, point2):
     return np.linalg.norm(difference)
 
 
-if __name__ == '__main__':
-    draw_line_widget = DrawLineWidget(cv2.imread('images/table_bottle_01.jpg'), scale=0.4)
+def get_vanishing_points(draw_line_widget):
     draw_line_widget.set_line_color((255, 50, 0))
     while True:
         cv2.imshow('image', draw_line_widget.get_image())
@@ -97,18 +103,53 @@ if __name__ == '__main__':
             break
     lines = draw_line_widget.get_lines()
 
-    A1 = np.array([lines[0][0][0], lines[0][0][1], 1])
-    B1 = np.array([lines[0][1][0], lines[0][1][1], 1])
-    A2 = np.array([lines[1][0][0], lines[1][0][1], 1])
-    B2 = np.array([lines[1][1][0], lines[1][1][1], 1])
-    point1 = get_intersection_point(A1, B1, A2, B2)
-    A1 = np.array([lines[2][0][0], lines[2][0][1], 1])
-    B1 = np.array([lines[2][1][0], lines[2][1][1], 1])
-    A2 = np.array([lines[3][0][0], lines[3][0][1], 1])
-    B2 = np.array([lines[3][1][0], lines[3][1][1], 1])
-    point2 = get_intersection_point(A1, B1, A2, B2)
-
+    first_vanishing_point = [np.array([lines[0][0][0], lines[0][0][1], 1]),
+                             np.array([lines[0][1][0], lines[0][1][1], 1]),
+                             np.array([lines[1][0][0], lines[1][0][1], 1]),
+                             np.array([lines[1][1][0], lines[1][1][1], 1])]
+    point1 = get_intersection_point(first_vanishing_point)
+    second_vanishing_point = [np.array([lines[2][0][0], lines[2][0][1], 1]),
+                              np.array([lines[2][1][0], lines[2][1][1], 1]),
+                              np.array([lines[3][0][0], lines[3][0][1], 1]),
+                              np.array([lines[3][1][0], lines[3][1][1], 1])]
+    point2 = get_intersection_point(second_vanishing_point)
     vanishing_points = [point1, point2]
+    return vanishing_points
+
+
+def calc_height(lines, v_x, v_y):
+    b = np.array([lines[0][0][0], lines[0][0][1], 1])
+    r = np.array([lines[0][1][0], lines[0][1][1], 1])
+    b_0 = np.array([lines[1][0][0], lines[1][0][1], 1])
+    t_0 = np.array([lines[1][1][0], lines[1][1][1], 1])
+    v_x = np.array([v_x[0], v_x[1], 1])
+    v_y = np.array([v_y[0], v_y[1], 1])
+
+    v = standardization_vector(np.cross(np.cross(b, b_0), np.cross(v_x, v_y)))
+    t = standardization_vector(np.cross(np.cross(v, t_0), np.cross(r, b)))
+
+    h_ = get_distance(b, t)
+    r_ = get_distance(b, r)
+
+    image_cross_ratio = h_ / r_
+
+    print("h: ", h_, "r: ", r_)
+    print("image_cross_ratio: ", image_cross_ratio)
+    bottle_height = 26
+    print("height of cup in cm: ", bottle_height / image_cross_ratio)
+    t = (round(t[0]), round(t[1]))
+    cv2.destroyAllWindows()
+    image = draw_line_widget.get_image()
+
+    cv2.circle(image, t, 10, (0, 0, 255), -1)
+    cv2.imshow('image', image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+if __name__ == '__main__':
+    draw_line_widget = DrawLineWidget(cv2.imread('images/table_bottle_01.jpg'), scale=0.4)
+    vanishing_points = get_vanishing_points(draw_line_widget)
     world_img, v_x, v_y = get_image_with_vanishing_points(draw_line_widget.get_image(), vanishing_points)
 
     draw_line_widget = DrawLineWidget(world_img)
@@ -121,34 +162,5 @@ if __name__ == '__main__':
         if len(draw_line_widget.get_lines()) == 2:
             break
     lines = draw_line_widget.get_lines()
-
-    b = np.array([lines[0][0][0], lines[0][0][1], 1])
-    r = np.array([lines[0][1][0], lines[0][1][1], 1])
-    b_0 = np.array([lines[1][0][0], lines[1][0][1], 1])
-    t_0 = np.array([lines[1][1][0], lines[1][1][1], 1])
-    v_x = np.array([v_x[0], v_x[1], 1])
-    v_y = np.array([v_y[0], v_y[1], 1])
-
-    v = np.cross(np.cross(b, b_0), np.cross(v_x, v_y))
-    v = v / v[2]
-    t = np.cross(np.cross(v, t_0), np.cross(r, b))
-    t = t / t[2]
-
-    h_ = get_distance(b, t)
-    r_ = get_distance(b, r)
-
-    image_cross_ratio = h_ / r_
-
-    print("h: ", h_, "r: ", r_)
-    print("image_cross_ratio: ", image_cross_ratio)
-    print(26 / image_cross_ratio)
-
-    t = (round(t[0]), round(t[1]))
-    cv2.destroyAllWindows()
-    image = draw_line_widget.get_image()
-
-    cv2.circle(image, t, 10, (0, 0, 255), -1)
-    cv2.imshow('image', image)
-    cv2.waitKey(0)
-
+    calc_height(lines, v_x, v_y)
     cv2.destroyAllWindows()
