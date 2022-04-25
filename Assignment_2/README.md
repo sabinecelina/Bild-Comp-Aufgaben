@@ -63,4 +63,4 @@ With the reference object the program calculates the height of the unknow object
     height = cross_ratio * input_float
     print("\n The height of the object is: ", height, " cm")
 ```
-According to our calculations the height should be 9.57cm
+According to our calculations the height of the cup should be 9.53cm
