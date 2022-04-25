@@ -142,7 +142,7 @@ if __name__ == '__main__':
     cv2.destroyAllWindows()
     linePair_A = np.array([lineA1, lineA2])
     linePair_B = np.array([lineB1, lineB2])
-    cross_ratio, image = calculatecross_ratio(
+    cross_ratio, image = calculateCrossRatio(
         linePair_A, linePair_B, lineD, lineC, image)
     print("\nEnter the height of the reference object in cm as a floating point number.\n")
     input_float = float(input())
