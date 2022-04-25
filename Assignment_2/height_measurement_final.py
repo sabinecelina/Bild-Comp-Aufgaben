@@ -79,11 +79,18 @@ def insertPointInImage(image, point, radius=10, color=(255, 255, 255), border=0)
     # return new image, point in new coordinates and the offset from the original image
     return new_image, new_point, offset
 
-
 def get_intersection_point(a1, a2, b1, b2):
     point = np.cross(np.cross(a1, a2), np.cross(b1, b2))
     point = point / point[2]
     return np.array([point[0], point[1], 1])
+
+def get_new_image(image, v_x, v_y, b, r, b_0, t_0, v, t, v_z):
+    image, _, o = insertPointInImage(image, v_x, radius = 15, color=(255, 100, 0), border=10)
+    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+
+    image, _, o = insertPointInImage(image, v_y, radius = 15, color=(255, 100, 0), border=10)
+    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+    return image
 
 
 def calculateCrossRatio(parallelLinePair_A, parallelLinePair_B, referenceObject, object, image):
@@ -107,7 +114,7 @@ def calculateCrossRatio(parallelLinePair_A, parallelLinePair_B, referenceObject,
         np.linalg.norm(r - b) *
         np.linalg.norm(v_z - t)
     )
-    return crossratio, editImage
+    return crossratio, get_new_image(editImage, v_x, v_y, b, r, b_0, t_0, v, t, v_z)
 
 
 if __name__ == '__main__':
