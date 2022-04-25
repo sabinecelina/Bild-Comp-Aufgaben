@@ -148,3 +148,8 @@ if __name__ == '__main__':
     input_float = float(input())
     height = cross_ratio * input_float
     print("\n The height of the object is: ", height, " cm")
+
+    cv2.namedWindow("image", cv2.WINDOW_NORMAL)
+    cv2.imshow("image", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
