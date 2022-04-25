@@ -33,8 +33,9 @@ Next step is to mark the unknown object from botton to top so the height can be 
 
 #### Write a script that computes the vanishing line for the table plane and visualizes it. (2 points)
 
-The function ```get_intersection_point()``` caluclates the intersection between to lines.
+The function ```get_intersection_point()``` calculates the intersection between to lines.
 
+```insert_point_in_image()``` displays the vanishing points. If the point is not in the image it fills space with black.
 At least the function ```calculate_cross_ratio()``` calculates the cross ratio of the unknown object with the given formula
 ```python
     v_x = get_intersection_point(
