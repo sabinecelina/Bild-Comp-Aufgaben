@@ -1,24 +1,31 @@
+from ssl import VERIFY_X509_PARTIAL_CHAIN
+from turtle import distance
 import numpy as np
 import cv2
 
-#lets a user draw a line on a given image
+# lets a user draw a line on a given image
 #input: image
-#returns: new image, linepoint coordinates as shape (2,2) np.array
-def drawLine(image, lineColor = (255, 255, 255), thickness = 1):
+# returns: new image, linepoint coordinates as shape (2,2) np.array
+
+
+def inputLine(image, lineColor=(255, 255, 255), thickness=1):
     def mouseEventHandler(event, x, y, flags, parameters):
         def on_mouse_click(x, y):
             nonlocal editImage, line_coordinates, drawing
             if drawing:
                 line_coordinates.append((x, y))
-                cv2.line(editImage, line_coordinates[0], line_coordinates[1], lineColor, thickness)
+                cv2.line(
+                    editImage, line_coordinates[0], line_coordinates[1], lineColor, thickness)
             else:
                 line_coordinates.append((x, y))
                 drawing = True
+
         def on_mouse_move(x, y):
             nonlocal editImage, line_coordinates, drawing
             if drawing:
                 editImage = image.copy()
-                cv2.line(editImage, line_coordinates[0], (x, y), lineColor, thickness)
+                cv2.line(
+                    editImage, line_coordinates[0], (x, y), lineColor, thickness)
         match event:
             case cv2.EVENT_LBUTTONDOWN:
                 on_mouse_click(x, y)
@@ -36,15 +43,17 @@ def drawLine(image, lineColor = (255, 255, 255), thickness = 1):
         if len(line_coordinates) == 2:
             break
     line = np.array(
-        [[line_coordinates[0][0], line_coordinates[0][1]],
-        [line_coordinates[1][0], line_coordinates[1][1]]])
+        [[line_coordinates[0][0], line_coordinates[0][1], 1],
+         [line_coordinates[1][0], line_coordinates[1][1], 1]])
     return line, editImage
 
-#inserts Point. If the point is not in the image it fills space with black. 
-#With the x and y offset the new image coordinates can be calculated.
-#input: image, point in image coordinates as (2) np.array
-#returns: new image, point in new image coordinates, x and y offset from original image
-def insertPointInImage(image, point, radius = 10, color = (255, 255, 255), border = 0):
+# inserts Point. If the point is not in the image it fills space with black.
+# With the x and y offset the new image coordinates can be calculated.
+# input: image, point in image coordinates as (2) np.array
+# returns: new image, point in new image coordinates, x and y offset from original image
+
+
+def insertPointInImage(image, point, radius=10, color=(255, 255, 255), border=0):
     height, width, _ = image.shape
     x, y = round(point[0]), round(point[1])
     border = radius + border
@@ -58,22 +67,38 @@ def insertPointInImage(image, point, radius = 10, color = (255, 255, 255), borde
     new_image_height = max_y - min_y
     # fill new image with black, draw old image and draw point
     new_image = np.zeros((new_image_height, new_image_width, 3), np.uint8)
-    offset = np.array([abs(min_x), abs(min_y)])
-    new_image[offset[1]:offset[1] + height, offset[0]:offset[0] + width, :] = image
-    new_point = point + offset
-    cv2.circle(new_image, new_point, radius, color, -1)
+    offset = np.array([abs(min_x), abs(min_y), 0])
+    new_image[offset[1]:offset[1] + height,
+              offset[0]:offset[0] + width, :] = image
+    new_point = point + np.array([offset[0], offset[1], 1]) 
+    cv2.circle(new_image, (round(new_point[0]), round(new_point[1])), radius, color, -1)
     # return new image, point in new coordinates and the offset from the original image
     return new_image, new_point, offset
 
+def get_intersection_point(a1, a2, b1, b2):
+    point = np.cross(np.cross(a1, a2), np.cross(b1, b2))
+    point = point / point[2]
+    return np.array([point[0], point[1], 1])
+
+def get_distance(point1, point2):
+    differenceVector = np.array((point2[0] - point1[0], point2[1] - point1[1]))
+    return np.linalg.norm(differenceVector)
 
 def calculateCrossRatio(parallelLinePair_A, parallelLinePair_B, referenceObject, object, image):
     editImage = image.copy()
-    #TODO
-    crossratio = 1
+    v_x = get_intersection_point(parallelLinePair_A[0][0], parallelLinePair_A[0][1], parallelLinePair_A[1][0], parallelLinePair_A[1][1])
+    v_y = get_intersection_point(parallelLinePair_B[0][0], parallelLinePair_B[0][1], parallelLinePair_B[1][0], parallelLinePair_B[1][1])
+    b = referenceObject[0]
+    r = referenceObject[1]
+    b_0 = object[0]
+    t_0 = object[1]
+    v = get_intersection_point(b, b_0, v_x, v_y)
+    t = get_intersection_point(v, t_0, r, b)
+    _h = get_distance(b, t)
+    _r = get_distance(b, r)
+    crossratio = _h / _r
+    print(crossratio)
     return crossratio, editImage
-
-def calculateHeight(crossratio, height):
-    return height / crossratio
 
 if __name__ == '__main__':
     print("""This program will allow you to determine the height of an object in an image. 
@@ -92,36 +117,26 @@ Both objects should ideally be placed on the same plane.\n""")
 Click to set the start or end point of a line.\n""")
     image = cv2.imread(path)
     original_image = image.copy()
-    lineA1, image = drawLine(image, lineColor = (0, 255, 0), thickness = 3)
-    lineA2, image  = drawLine(image, lineColor = (0, 255, 0), thickness = 3)
+    lineA1, image = inputLine(image, lineColor=(0, 255, 0), thickness=3)
+    lineA2, image = inputLine(image, lineColor=(0, 255, 0), thickness=3)
     print("""\nIn the second step, mark two different parallel lines on the plane. 
 Those lines should not be parallel to the last two lines you marked.\n""")
-    lineB1, image = drawLine(image, lineColor = (255, 0, 0), thickness = 3)
-    lineB2, image  = drawLine(image, lineColor = (255, 0, 0), thickness = 3)
+    lineB1, image = inputLine(image, lineColor=(255, 0, 0), thickness=3)
+    lineB2, image = inputLine(image, lineColor=(255, 0, 0), thickness=3)
     print("""\nNow mark the object from bottom to top.
 Note that the selection can be difficult 
 depending on the shape of the object due to perspective effects.\n""")
-    lineC, image = drawLine(image, lineColor = (0, 0, 255), thickness = 3)
+    lineC, image = inputLine(image, lineColor=(0, 0, 255), thickness=3)
     print("""\nNow mark the reference object from bottom to top.
 Note that the selection can be difficult 
 depending on the shape of the object due to perspective effects.\n""")
-    lineD, image = drawLine(image, lineColor = (0, 150, 200), thickness = 3)
+    lineD, image = inputLine(image, lineColor=(0, 150, 200), thickness=3)
     cv2.destroyAllWindows()
     linePair_A = np.array([lineA1, lineA2])
     linePair_B = np.array([lineB1, lineB2])
-    crossratio, image = calculateCrossRatio(linePair_A, linePair_B, lineD, lineC, image)
+    crossratio, image = calculateCrossRatio(
+        linePair_A, linePair_B, lineD, lineC, image)
     print("\nEnter the height of the reference object in cm as a floating point number.\n")
     input_float = float(input())
-    height = calculateHeight(crossratio, input_float)
+    height = crossratio * input_float
     print("\n The height of the object is: ", height, " cm")
-
-
-
-
-
-
-        
-
-    
-
-
