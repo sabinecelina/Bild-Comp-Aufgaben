@@ -88,22 +88,22 @@ def get_new_image(image, v_x, v_y, b, r, b_0, t_0, v, t, v_z):
     image, _, o = insert_point_in_image(
         image, v_x, radius=20, color=(255, 100, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
-        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+        o, b + o, r + o, b_0 + o, t_0 + o, v + o, t + o, v_z + o
 
     image, _, o = insert_point_in_image(
         image, v_y, radius=20, color=(255, 100, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
-        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+        o, b + o, r + o, b_0 + o, t_0 + o, v + o, t + o, v_z + o
 
     image, _, o = insert_point_in_image(
         image, v, radius=20, color=(200, 255, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
-        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+        o, b + o, r + o, b_0 + o, t_0 + o, v + o, t + o, v_z + o
 
     image, _, o = insert_point_in_image(
         image, t, radius=10, color=(100, 200, 255), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
-        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+        o, b + o, r + o, b_0 + o, t_0 + o, v + o, t + o, v_z + o
 
     v_x = (round(v_x[0]), round(v_x[1]))
     v_y = (round(v_y[0]), round(v_y[1]))
