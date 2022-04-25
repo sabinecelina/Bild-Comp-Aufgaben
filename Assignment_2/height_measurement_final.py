@@ -70,7 +70,7 @@ def insert_point_in_image(image, point, radius=10, color=(255, 255, 255), border
     new_image = np.zeros((new_image_height, new_image_width, 3), np.uint8)
     offset = np.array([abs(min_x), abs(min_y), 0])
     new_image[offset[1]:offset[1] + height,
-    offset[0]:offset[0] + width, :] = image
+              offset[0]:offset[0] + width, :] = image
     new_point = point + np.array([offset[0], offset[1], 1])
     cv2.circle(new_image, (round(new_point[0]), round(
         new_point[1])), radius, color, -1)
@@ -85,11 +85,41 @@ def get_intersection_point(a1, a2, b1, b2):
 
 
 def get_new_image(image, v_x, v_y, b, r, b_0, t_0, v, t, v_z):
-    image, _, o = insert_point_in_image(image, v_x, radius=15, color=(255, 100, 0), border=10)
-    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+    image, _, o = insert_point_in_image(
+        image, v_x, radius=20, color=(255, 100, 0), border=10)
+    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
+        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+    offset = o
+    image, _, o = insert_point_in_image(
+        image, v_y, radius=20, color=(255, 100, 0), border=10)
+    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
+        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+    offset += o
+    image, _, o = insert_point_in_image(
+        image, v, radius=20, color=(200, 255, 0), border=10)
+    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
+        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+    offset += o
+    image, _, o = insert_point_in_image(
+        image, t, radius=10, color=(100, 200, 255), border=10)
+    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
+        o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+    offset += o
+    v_x = (round(v_x[0]), round(v_x[1]))
+    v_y = (round(v_y[0]), round(v_y[1]))
+    b = (round(b[0]), round(b[1]))
+    r = (round(r[0]), round(r[1]))
+    b_0 = (round(b_0[0]), round(b_0[1]))
+    t_0 = (round(t_0[0]), round(t_0[1]))
+    v = (round(v[0]), round(v[1]))
+    t = (round(t[0]), round(t[1]))
+    v_z = (round(v_z[0]), round(v_z[1]))
 
-    image, _, o = insert_point_in_image(image, v_y, radius=15, color=(255, 100, 0), border=10)
-    v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
+    cv2.line(image, (v_x[0], v_x[1]), (v_y[0], v_y[1]), (255, 100, 200), 3)
+    cv2.line(image, (v_x[0], v_x[1]), (v[0], v[1]), (255, 100, 200), 3)
+    cv2.line(image, (v[0], v[1]), (v_y[0], v_y[1]), (255, 100, 200), 3)
+    cv2.line(image, (v[0], v[1]), (b[0], b[1]), (0, 100, 255), 2)
+    cv2.line(image, (v[0], v[1]), (t[0], t[1]), (0, 100, 255), 2)
     return image
 
 
@@ -106,7 +136,8 @@ def calculate_cross_ratio(parallelLine_pair_A, parallelLine_pair_B, reference_ob
     v = get_intersection_point(b, b_0, v_x, v_y)
     t = get_intersection_point(v, t_0, r, b)
     v_z = get_intersection_point(t_0, b_0, r, b)
-    cross_ratio = (np.linalg.norm(t - b) * np.linalg.norm(v_z - r)) / (np.linalg.norm(r - b) * np.linalg.norm(v_z - t))
+    cross_ratio = (np.linalg.norm(t - b) * np.linalg.norm(v_z - r)) / \
+        (np.linalg.norm(r - b) * np.linalg.norm(v_z - t))
     return cross_ratio, get_new_image(edit_image, v_x, v_y, b, r, b_0, t_0, v, t, v_z)
 
 
