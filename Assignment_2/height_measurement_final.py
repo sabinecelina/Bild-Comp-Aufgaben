@@ -54,7 +54,7 @@ def input_line(image, line_color=(255, 255, 255), thickness=1):
 # returns: new image, point in new image coordinates, x and y offset from original image
 
 
-def insertPointInImage(image, point, radius=10, color=(255, 255, 255), border=0):
+def insert_point_in_image(image, point, radius=10, color=(255, 255, 255), border=0):
     height, width, _ = image.shape
     x, y = round(point[0]), round(point[1])
     border = radius + border
@@ -85,22 +85,22 @@ def get_intersection_point(a1, a2, b1, b2):
 
 
 def get_new_image(image, v_x, v_y, b, r, b_0, t_0, v, t, v_z):
-    image, _, o = insertPointInImage(image, v_x, radius=15, color=(255, 100, 0), border=10)
+    image, _, o = insert_point_in_image(image, v_x, radius=15, color=(255, 100, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
 
-    image, _, o = insertPointInImage(image, v_y, radius=15, color=(255, 100, 0), border=10)
+    image, _, o = insert_point_in_image(image, v_y, radius=15, color=(255, 100, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
     return image
 
 
-def calculate_cross_ratio(parallelLinePair_A, parallelLinePair_B, referenceObject, object, image):
+def calculate_cross_ratio(parallelLine_pair_A, parallelLine_pair_B, reference_object, object, image):
     edit_image = image.copy()
     v_x = get_intersection_point(
-        parallelLinePair_A[0][0], parallelLinePair_A[0][1], parallelLinePair_A[1][0], parallelLinePair_A[1][1])
+        parallelLine_pair_A[0][0], parallelLine_pair_A[0][1], parallelLine_pair_A[1][0], parallelLine_pair_A[1][1])
     v_y = get_intersection_point(
-        parallelLinePair_B[0][0], parallelLinePair_B[0][1], parallelLinePair_B[1][0], parallelLinePair_B[1][1])
-    b = referenceObject[0]
-    r = referenceObject[1]
+        parallelLine_pair_B[0][0], parallelLine_pair_B[0][1], parallelLine_pair_B[1][0], parallelLine_pair_B[1][1])
+    b = reference_object[0]
+    r = reference_object[1]
     b_0 = object[0]
     t_0 = object[1]
     v = get_intersection_point(b, b_0, v_x, v_y)
