@@ -70,35 +70,42 @@ def insertPointInImage(image, point, radius=10, color=(255, 255, 255), border=0)
     offset = np.array([abs(min_x), abs(min_y), 0])
     new_image[offset[1]:offset[1] + height,
               offset[0]:offset[0] + width, :] = image
-    new_point = point + np.array([offset[0], offset[1], 1]) 
-    cv2.circle(new_image, (round(new_point[0]), round(new_point[1])), radius, color, -1)
+    new_point = point + np.array([offset[0], offset[1], 1])
+    cv2.circle(new_image, (round(new_point[0]), round(
+        new_point[1])), radius, color, -1)
     # return new image, point in new coordinates and the offset from the original image
     return new_image, new_point, offset
+
 
 def get_intersection_point(a1, a2, b1, b2):
     point = np.cross(np.cross(a1, a2), np.cross(b1, b2))
     point = point / point[2]
     return np.array([point[0], point[1], 1])
 
-def get_distance(point1, point2):
-    differenceVector = np.array((point2[0] - point1[0], point2[1] - point1[1]))
-    return np.linalg.norm(differenceVector)
 
 def calculateCrossRatio(parallelLinePair_A, parallelLinePair_B, referenceObject, object, image):
     editImage = image.copy()
-    v_x = get_intersection_point(parallelLinePair_A[0][0], parallelLinePair_A[0][1], parallelLinePair_A[1][0], parallelLinePair_A[1][1])
-    v_y = get_intersection_point(parallelLinePair_B[0][0], parallelLinePair_B[0][1], parallelLinePair_B[1][0], parallelLinePair_B[1][1])
+    v_x = get_intersection_point(
+        parallelLinePair_A[0][0], parallelLinePair_A[0][1], parallelLinePair_A[1][0], parallelLinePair_A[1][1])
+    v_y = get_intersection_point(
+        parallelLinePair_B[0][0], parallelLinePair_B[0][1], parallelLinePair_B[1][0], parallelLinePair_B[1][1])
     b = referenceObject[0]
     r = referenceObject[1]
     b_0 = object[0]
     t_0 = object[1]
     v = get_intersection_point(b, b_0, v_x, v_y)
     t = get_intersection_point(v, t_0, r, b)
-    _h = get_distance(b, t)
-    _r = get_distance(b, r)
-    crossratio = _h / _r
-    print(crossratio)
+
+    v_z = get_intersection_point(t_0, b_0, r, b)
+    crossratio = (
+        np.linalg.norm(t - b) *
+        np.linalg.norm(v_z - r)
+    ) / (
+        np.linalg.norm(r - b) *
+        np.linalg.norm(v_z - t)
+    )
     return crossratio, editImage
+
 
 if __name__ == '__main__':
     print("""This program will allow you to determine the height of an object in an image. 
