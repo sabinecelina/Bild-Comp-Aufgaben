@@ -36,6 +36,9 @@ Next step is to mark the unknown object from botton to top so the height can be 
 The function ```get_intersection_point()``` calculates the intersection between to lines.
 
 ```insert_point_in_image()``` displays the vanishing points. If the point is not in the image it fills space with black.
+
+#### Write a script that computes the height of the mug. (2 points)
+
 At least the function ```calculate_cross_ratio()``` calculates the cross ratio of the unknown object with the given formula
 ```python
     v_x = get_intersection_point(
