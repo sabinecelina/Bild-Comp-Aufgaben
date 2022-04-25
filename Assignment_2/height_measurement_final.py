@@ -105,7 +105,6 @@ def calculate_cross_ratio(parallelLinePair_A, parallelLinePair_B, referenceObjec
     t_0 = object[1]
     v = get_intersection_point(b, b_0, v_x, v_y)
     t = get_intersection_point(v, t_0, r, b)
-
     v_z = get_intersection_point(t_0, b_0, r, b)
     cross_ratio = (np.linalg.norm(t - b) * np.linalg.norm(v_z - r)) / (np.linalg.norm(r - b) * np.linalg.norm(v_z - t))
     return cross_ratio, get_new_image(edit_image, v_x, v_y, b, r, b_0, t_0, v, t, v_z)
