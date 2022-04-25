@@ -105,7 +105,6 @@ def calculateCrossRatio(parallelLinePair_A, parallelLinePair_B, referenceObject,
     t_0 = object[1]
     v = get_intersection_point(b, b_0, v_x, v_y)
     t = get_intersection_point(v, t_0, r, b)
-
     v_z = get_intersection_point(t_0, b_0, r, b)
     crossratio = (
         np.linalg.norm(t - b) *
