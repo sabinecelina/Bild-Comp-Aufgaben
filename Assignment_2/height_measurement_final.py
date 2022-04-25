@@ -89,22 +89,22 @@ def get_new_image(image, v_x, v_y, b, r, b_0, t_0, v, t, v_z):
         image, v_x, radius=20, color=(255, 100, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
         o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
-    offset = o
+
     image, _, o = insert_point_in_image(
         image, v_y, radius=20, color=(255, 100, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
         o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
-    offset += o
+
     image, _, o = insert_point_in_image(
         image, v, radius=20, color=(200, 255, 0), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
         o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
-    offset += o
+
     image, _, o = insert_point_in_image(
         image, t, radius=10, color=(100, 200, 255), border=10)
     v_x, v_y, b, r, b_0, t_0, v, t, v_z = v_x + o, v_y + \
         o, b + o, r + o, b_0 + 0, t_0 + o, v + o, t + o, v_z + o
-    offset += o
+
     v_x = (round(v_x[0]), round(v_x[1]))
     v_y = (round(v_y[0]), round(v_y[1]))
     b = (round(b[0]), round(b[1]))
@@ -120,6 +120,8 @@ def get_new_image(image, v_x, v_y, b, r, b_0, t_0, v, t, v_z):
     cv2.line(image, (v[0], v[1]), (v_y[0], v_y[1]), (255, 100, 200), 3)
     cv2.line(image, (v[0], v[1]), (b[0], b[1]), (0, 100, 255), 2)
     cv2.line(image, (v[0], v[1]), (t[0], t[1]), (0, 100, 255), 2)
+    cv2.line(image, (b_0[0], b_0[1]), (b[0], b[1]), (0, 100, 255), 2)
+    cv2.line(image, (t_0[0], t_0[1]), (t[0], t[1]), (0, 100, 255), 2)
     return image
 
 
