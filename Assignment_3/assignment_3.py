@@ -84,8 +84,8 @@ def rectify_images(img1, img2, pts1, pts2, F):
     img1_rectified_resized = cv2.resize(img1_rectified, (int(height_one / 8), int(width_two / 8)))
     img2_rectified_resized = cv2.resize(img2_rectified, (int(height_two / 8), int(width_two / 8)))
     numpy_vertical = np.hstack((img1_rectified_resized, img2_rectified_resized))
-    cv2.imshow("rectified images: ", numpy_vertical)
-    cv2.waitKey(0)
+    # cv2.imshow("rectified images: ", numpy_vertical)
+    # cv2.waitKey(0)
     return img1_rectified, img2_rectified
 
 
@@ -110,6 +110,14 @@ def createDepthMap(img1_rectified, img2_rectified):
     cv2.imshow("disparity", disp_resized)
     cv2.waitKey(0)
     return depth_map
+
+
+def create_one_depth_map(depth_maps):
+    depth_map = np.zeros(depth_maps[0].shape)
+    w, h = depth_maps[0].shape
+    for x in range(w - 1):
+        for y in range(h - 1):
+            depth_map[x, y] = (int(depth_maps[0][x, y]) + int(depth_maps[1][x, y]) + int(depth_maps[2][x, y])) / 255 / 3
 
 
 # load images
@@ -137,8 +145,14 @@ numpy_vertical = np.hstack((imgLeft, imgMiddle, imgRight))
 
 # find matching points between imgL and imgM
 pts_1, pts_2, F1 = find_matching_points(keypoint_one, keypoint_two)
-rectified_images = rectify_images(imgL, imgR, pts_1, pts_2, F1)
-createDepthMap(rectified_images[0], rectified_images[1])
+rectified_images = rectify_images(imgL, imgM, pts_1, pts_2, F1)
+depth_map_one = createDepthMap(rectified_images[0], rectified_images[1])
 # draw_epiline(rectify_images[0], rectify_images[1], pts_1, pts_2, F1)
+# find matching points between imgL and imgR
+pts_3, pts_4, F2 = find_matching_points(keypoint_one, keypoint_three)
+rectified_images = rectify_images(imgL, imgR, pts_3, pts_4, F2)
+depth_map_two = createDepthMap(rectified_images[0], rectified_images[1])
 # find matching points between imgM and imgR
-# pts_3, pts_4, F2 = find_matching_points(keypoint_one, keypoint_three)
+pts_5, pts_6, F3 = find_matching_points(keypoint_two, keypoint_three)
+rectified_images = rectify_images(imgM, imgR, pts_5, pts_6, F3)
+depth_map_three = createDepthMap(rectified_images[0], rectified_images[1])
