@@ -147,7 +147,6 @@ numpy_vertical = np.hstack((imgLeft, imgMiddle, imgRight))
 pts_1, pts_2, F1 = find_matching_points(keypoint_one, keypoint_two)
 rectified_images = rectify_images(imgL, imgM, pts_1, pts_2, F1)
 depth_map_one = createDepthMap(rectified_images[0], rectified_images[1])
-# draw_epiline(rectify_images[0], rectify_images[1], pts_1, pts_2, F1)
 # find matching points between imgL and imgR
 pts_3, pts_4, F2 = find_matching_points(keypoint_one, keypoint_three)
 rectified_images = rectify_images(imgL, imgR, pts_3, pts_4, F2)
@@ -156,3 +155,5 @@ depth_map_two = createDepthMap(rectified_images[0], rectified_images[1])
 pts_5, pts_6, F3 = find_matching_points(keypoint_two, keypoint_three)
 rectified_images = rectify_images(imgM, imgR, pts_5, pts_6, F3)
 depth_map_three = createDepthMap(rectified_images[0], rectified_images[1])
+
+# create_one_depth_map([depth_map_one, depth_map_two, depth_map_three])
