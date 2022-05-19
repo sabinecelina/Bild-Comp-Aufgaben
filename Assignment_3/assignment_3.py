@@ -80,13 +80,36 @@ def rectify_images(img1, img2, pts1, pts2, F):
     height_two, width_two = img2.shape
     _, H1, H2 = cv2.stereoRectifyUncalibrated(np.float32(pts1), np.float32(pts2), F, imgSize=(width_one, height_one))
     img1_rectified = cv2.warpPerspective(img1, H1, (width_one, height_one))
-    img1_rectified_resized = cv2.resize(img1_rectified, (int(height_one / 8), int(width_two / 8)))
     img2_rectified = cv2.warpPerspective(img2, H2, (width_two, height_two))
+    img1_rectified_resized = cv2.resize(img1_rectified, (int(height_one / 8), int(width_two / 8)))
     img2_rectified_resized = cv2.resize(img2_rectified, (int(height_two / 8), int(width_two / 8)))
     numpy_vertical = np.hstack((img1_rectified_resized, img2_rectified_resized))
     cv2.imshow("rectified images: ", numpy_vertical)
     cv2.waitKey(0)
     return img1_rectified, img2_rectified
+
+
+def createDepthMap(img1_rectified, img2_rectified):
+    # Creating an object of StereoSGBM algorithm
+    stereo = cv2.StereoSGBM_create(minDisparity=0,
+                                   numDisparities=64,
+                                   blockSize=8,
+                                   disp12MaxDiff=1,
+                                   uniquenessRatio=10,
+                                   speckleWindowSize=10,
+                                   speckleRange=8)
+
+    # Calculate disparity using the chosen stereo algorithm
+    disp = stereo.compute(img1_rectified, img2_rectified).astype(np.float32)
+
+    # Normalize the disparity map in order to display it
+    disp = cv2.normalize(disp, 0, 255, cv2.NORM_MINMAX)
+    depth_map = np.uint8(disp)
+    disp_resized = cv2.resize(disp, (int(disp.shape[0] / 8), int(disp.shape[1] / 8)))
+    # Display the disparity map
+    cv2.imshow("disparity", disp_resized)
+    cv2.waitKey(0)
+    return depth_map
 
 
 # load images
@@ -114,7 +137,8 @@ numpy_vertical = np.hstack((imgLeft, imgMiddle, imgRight))
 
 # find matching points between imgL and imgM
 pts_1, pts_2, F1 = find_matching_points(keypoint_one, keypoint_two)
-rectify_images = rectify_images(imgL, imgR, pts_1, pts_2, F1)
+rectified_images = rectify_images(imgL, imgR, pts_1, pts_2, F1)
+createDepthMap(rectified_images[0], rectified_images[1])
 # draw_epiline(rectify_images[0], rectify_images[1], pts_1, pts_2, F1)
 # find matching points between imgM and imgR
 # pts_3, pts_4, F2 = find_matching_points(keypoint_one, keypoint_three)
