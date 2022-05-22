@@ -137,23 +137,33 @@ def calculate_disparity_map(image1_rectified, image2_rectified):
     cv.imwrite("generated/disparity_map_normalized.png", image_disparity_map)
     return image_disparity_map
 
-if __name__ == "__main__":
-    image1 = cv.imread('images/left.jpg', cv.IMREAD_GRAYSCALE)
-    image2 = cv.imread('images/middle.jpg', cv.IMREAD_GRAYSCALE)
-
+def stereo_disparity_map(image1, image2):
     keypoints1, keypoints2, descriptors1, descriptors2 = detect_keypoints(image1, image2)
-    visualize_keypoints(image1, keypoints1, show=True, write=True)
-    visualize_keypoints(image2, keypoints2, show=True, write=True)
+    #visualize_keypoints(image1, keypoints1, show=True, write=True)
+    #visualize_keypoints(image2, keypoints2, show=True, write=True)
     points1, points2, good_matches, all_matches = match_keypoints(keypoints1, keypoints2, descriptors1, descriptors2, filter_limit = 0.6)
-    visualize_keypoint_matches(image1, image2, keypoints1, keypoints2, good_matches, show=True, write=True)
+    #visualize_keypoint_matches(image1, image2, keypoints1, keypoints2, good_matches, show=True, write=True)
     fundamental_matrix, inlier_points1, inlier_points2 = calculate_fundamental_matrix(points1, points2)
-    visualize_epilines(image1, image2, inlier_points1, inlier_points2, fundamental_matrix)
+    #visualize_epilines(image1, image2, inlier_points1, inlier_points2, fundamental_matrix)
     image1_rectified, image2_rectified = rectifyImages(image1, image2, points1, points2, fundamental_matrix)
-    visualize_rectified_images(image1_rectified, image2_rectified)
-    disparity_SGBM = calculate_disparity_map(image1_rectified, image2_rectified)
-    cv.namedWindow("disparity map", cv.WINDOW_GUI_NORMAL)
-    cv.imshow("disparity map", disparity_SGBM)
-    cv.waitKey(0)
-    cv.destroyAllWindows()
+    #visualize_rectified_images(image1_rectified, image2_rectified)
+    disparity_map = calculate_disparity_map(image1_rectified, image2_rectified)
+    return disparity_map
 
+def disparity_map(reference_image, image_list):
+    disparity_maps = []
+    for image in image_list:
+        disparity_maps.append(stereo_disparity_map(reference_image, image))
 
+    # normalize using the baselines (line between the two camera centers) to get the value of the pixel in different pictures. 
+    # Those should be the same after normalization. Use Reference as ground truth
+    # Then add all normalized disparity maps together
+    # done
+    
+
+if __name__ == "__main__":
+    image_list = []
+    reference_image = cv.imread("images/left.jpg", cv.IMREAD_GRAYSCALE)
+    image_list.append(cv.imread("images/middle.jpg", cv.IMREAD_GRAYSCALE))
+    image_list.append(cv.imread("images/right.jpg", cv.IMREAD_GRAYSCALE))
+    disparity_map(reference_image, image_list)
