@@ -122,45 +122,20 @@ def visualize_rectified_images(image1_rectified, image2_rectified, show=True, wr
 def calculate_disparity_map(image1_rectified, image2_rectified):
     # Adapted from: https://github.com/opencv/opencv/blob/master/samples/python/stereo_match.py
     # and: https://docs.opencv.org/master/dd/d53/tutorial_py_depthmap.html
-
-    # Matched block size. It must be an odd number >=1 . Normally, it should be somewhere in the 3..11 range.
-    block_size = 11
-    min_disp = -128
-    max_disp = 128
-    # Maximum disparity minus minimum disparity. The value is always greater than zero.
-    # In the current implementation, this parameter must be divisible by 16.
-    num_disp = max_disp - min_disp
-    # Margin in percentage by which the best (minimum) computed cost function value should "win" the second best value to consider the found match correct.
-    # Normally, a value within the 5-15 range is good enough
-    uniquenessRatio = 5
-    # Maximum size of smooth disparity regions to consider their noise speckles and invalidate.
-    # Set it to 0 to disable speckle filtering. Otherwise, set it somewhere in the 50-200 range.
-    speckleWindowSize = 200
-    # Maximum disparity variation within each connected component.
-    # If you do speckle filtering, set the parameter to a positive value, it will be implicitly multiplied by 16.
-    # Normally, 1 or 2 is good enough.
-    speckleRange = 2
-    disp12MaxDiff = 0
-
-    stereo = cv.StereoSGBM_create(
-        minDisparity=min_disp,
-        numDisparities=num_disp,
-        blockSize=block_size,
-        uniquenessRatio=uniquenessRatio,
-        speckleWindowSize=speckleWindowSize,
-        speckleRange=speckleRange,
-        disp12MaxDiff=disp12MaxDiff,
-        P1=8 * 1 * block_size * block_size,
-        P2=32 * 1 * block_size * block_size,
-    )
-    image_disparity_SGBM = stereo.compute(image1_rectified, image2_rectified)
-
+    stereo = cv.StereoSGBM_create(minDisparity=0,
+                                   numDisparities=64,
+                                   blockSize=8,
+                                   disp12MaxDiff=1,
+                                   uniquenessRatio=10,
+                                   speckleWindowSize=10,
+                                   speckleRange=8)
+    image_disparity_map = stereo.compute(image1_rectified, image2_rectified)
     # Normalize the values to a range from 0..255 for a grayscale image
-    image_disparity_SGBM = cv.normalize(image_disparity_SGBM, image_disparity_SGBM, alpha=255,
+    image_disparity_map = cv.normalize(image_disparity_map, image_disparity_map, alpha=255,
                                 beta=0, norm_type=cv.NORM_MINMAX)
-    image_disparity_SGBM = np.uint8(image_disparity_SGBM)
-    cv.imwrite("generated/disparity_SGBM_normalized.png", image_disparity_SGBM)
-    return image_disparity_SGBM
+    image_disparity_map = np.uint8(image_disparity_map)
+    cv.imwrite("generated/disparity_map_normalized.png", image_disparity_map)
+    return image_disparity_map
 
 if __name__ == "__main__":
     image1 = cv.imread('images/left.jpg', cv.IMREAD_GRAYSCALE)
