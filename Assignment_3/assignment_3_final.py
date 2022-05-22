@@ -148,17 +148,20 @@ def stereo_disparity_map(image1, image2):
     image1_rectified, image2_rectified = rectifyImages(image1, image2, points1, points2, fundamental_matrix)
     #visualize_rectified_images(image1_rectified, image2_rectified)
     disparity_map = calculate_disparity_map(image1_rectified, image2_rectified)
-    return disparity_map
+    return disparity_map, fundamental_matrix
 
 def disparity_map(reference_image, image_list):
     disparity_maps = []
     for image in image_list:
         disparity_maps.append(stereo_disparity_map(reference_image, image))
 
+    #TODO
+    # get baselines from the fundamental matrices
     # normalize using the baselines (line between the two camera centers) to get the value of the pixel in different pictures. 
     # Those should be the same after normalization. Use Reference as ground truth
     # Then add all normalized disparity maps together
     # done
+    #TODO
     
 
 if __name__ == "__main__":
