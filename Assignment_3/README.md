@@ -38,14 +38,14 @@ This function is can be called by
 visualize_epilines(image1, image2, points1, points2, fundamental_matrix)
 ```
 
-If everything worked fine the images can be rectified. The rectification rotates and translates the images.
+If everything worked fine the images can be rectified. The rectification rotates and translates the images. <br>
 <img src="readme-images/img_2.png" alt="img_2.png" width="400"/>
 
-With the rectified images the depth map can be generated.
+With the rectified images the disparity map can be generated.
 ```python
 rectifyImages(image1, image2, points1, points2, fundamental_matrix)
 calculate_disparity_map(image1_rectified, image2_rectified)
 ```
 
-Last but at least: generate a depth map from more than two images: <br>
+Last but at least: generate a disparity map from more than two images: <br>
 For this step the program adds all disparity images and take the mean value of them.
