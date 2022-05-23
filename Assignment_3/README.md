@@ -24,7 +24,7 @@ The first step the program does is finding feature points between two images wit
 Then this feature points between this two images can be displayed. 
 Next step is the calculation of the fundamental matrix F. 
 
-<img src="readme-images/img.png" alt="img.png" width="200"/>
+<img src="readme-images/img.png" alt="img.png" width="400"/>
 <!-- ![img.png](readme-images/img.png =250x) -->
 
 ```python
@@ -39,7 +39,7 @@ visualize_epilines(image1, image2, points1, points2, fundamental_matrix)
 ```
 
 If everything worked fine the images can be rectified. The rectification rotates and translates the images.
-![img_2.png](readme-images/img_2.png)
+<img src="readme-images/img_2.png" alt="img_2.png" width="400"/>
 
 With the rectified images the depth map can be generated.
 ```python
