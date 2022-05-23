@@ -24,7 +24,8 @@ The first step the program does is finding feature points between two images wit
 Then this feature points between this two images can be displayed. 
 Next step is the calculation of the fundamental matrix F. 
 
-![img.png](readme-images/img.png =250x)
+<img src="readme-images/img.png" alt="img.png" width="200"/>
+<!-- ![img.png](readme-images/img.png =250x) -->
 
 ```python
 fundamental_matrix, inliers = cv2.findFundamentalMat(points1, points2, cv.FM_RANSAC)
