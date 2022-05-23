@@ -39,3 +39,11 @@ visualize_epilines(image1, image2, points1, points2, fundamental_matrix)
 
 If everything worked fine the images can be rectified. The rectification rotates and translates the images.
 ![img_2.png](readme-images/img_2.png)
+
+With the rectified images the depth map can be generated.
+```python
+rectifyImages(image1, image2, points1, points2, fundamental_matrix)
+calculate_disparity_map(image1_rectified, image2_rectified)
+```
+
+Last but at least: generate a depth map from more than two images:
