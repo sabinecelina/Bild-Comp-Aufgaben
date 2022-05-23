@@ -52,6 +52,7 @@ def match_keypoints(keypoints1, keypoints2, descriptors1, descriptors2, filter_l
     return points1, points2, good_matches, all_matches
 
 def visualize_keypoint_matches(image1, image2, keypoints1, keypoints2, matches, show=True, write=True):
+    '''Visualizes Keypoint Matches'''
     draw_parameters = dict(matchColor=(0, 255, 0),
                    singlePointColor=(255, 0, 0),
                    flags=cv.DrawMatchesFlags_DEFAULT)
@@ -64,6 +65,7 @@ def visualize_keypoint_matches(image1, image2, keypoints1, keypoints2, matches, 
     return image_matches
 
 def calculate_fundamental_matrix(points1, points2):
+    '''Calculates the fundamental matrix'''
     points1 = np.int32(points1)
     points2 = np.int32(points2)
     fundamental_matrix, inliers = cv.findFundamentalMat(points1, points2, cv.FM_RANSAC)
@@ -72,6 +74,7 @@ def calculate_fundamental_matrix(points1, points2):
     return fundamental_matrix, inlier_points1, inlier_points2
 
 def visualize_epilines(image1, image2, points1, points2, fundamental_matrix):
+    '''Visualizes epilines'''
     def drawlines(img1src, img2src, lines, pts1src, pts2src):
         r, c = img1src.shape
         img1color = cv.cvtColor(img1src, cv.COLOR_GRAY2BGR)
@@ -100,6 +103,7 @@ def visualize_epilines(image1, image2, points1, points2, fundamental_matrix):
     plt.show()
 
 def rectifyImages(image1, image2, points1, points2, fundamental_matrix):
+    '''Rectifies the images'''
     height1, width1 = image1.shape
     height2, width2 = image2.shape
     _, H1, H2 = cv.stereoRectifyUncalibrated(
@@ -110,6 +114,7 @@ def rectifyImages(image1, image2, points1, points2, fundamental_matrix):
     return image1_rectified, image2_rectified
 
 def visualize_rectified_images(image1_rectified, image2_rectified, show=True, write=True):
+    '''Visualizes the rectified images'''
     if write:
         cv.imwrite("generated/rectified_1.png", image1_rectified)
         cv.imwrite("generated/rectified_2.png", image2_rectified)
@@ -118,6 +123,7 @@ def visualize_rectified_images(image1_rectified, image2_rectified, show=True, wr
         cv.imshow("rectified_images", np.concatenate((image1_rectified, image2_rectified), axis=1))
 
 def calculate_disparity_map(image1_rectified, image2_rectified):
+    '''Calculates a stereo disparity map between two rectified images'''
     # Adapted from: https://github.com/opencv/opencv/blob/master/samples/python/stereo_match.py
     # and: https://docs.opencv.org/master/dd/d53/tutorial_py_depthmap.html
     stereo = cv.StereoSGBM_create(minDisparity=0,
@@ -136,6 +142,7 @@ def calculate_disparity_map(image1_rectified, image2_rectified):
     return image_disparity_map
 
 def stereo_disparity_map(image1, image2):
+    '''Executes all steps to calculate a stereo disparity map'''
     keypoints1, keypoints2, descriptors1, descriptors2 = detect_keypoints(image1, image2)
     #visualize_keypoints(image1, keypoints1, show=True, write=True)
     #visualize_keypoints(image2, keypoints2, show=True, write=True)
@@ -149,6 +156,8 @@ def stereo_disparity_map(image1, image2):
     return disparity_map, fundamental_matrix
 
 def disparity_map(reference_image, image_list):
+    '''Calculates a disparsity map for more then two images. A reference image must be given'''
+    #based no the paper http://www.diva-portal.org/smash/get/diva2:1051977/FULLTEXT01.pdf
     disparity_maps = []
     for image in image_list:
         disparity_map, _ = stereo_disparity_map(reference_image, image)
@@ -166,7 +175,6 @@ def disparity_map(reference_image, image_list):
     cv.imwrite("generated/disparity_map_normalized.png", final_disparity_map)
     return final_disparity_map
     
-
 if __name__ == "__main__":
     image_list = []
     reference_image = cv.imread("images/tsukuba01.jpg", cv.IMREAD_GRAYSCALE)
