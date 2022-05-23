@@ -47,5 +47,5 @@ rectifyImages(image1, image2, points1, points2, fundamental_matrix)
 calculate_disparity_map(image1_rectified, image2_rectified)
 ```
 
-Last but at least: generate a depth map from more than two images:
+Last but at least: generate a depth map from more than two images: <br>
 For this step the program adds all disparity images and take the mean value of them.
