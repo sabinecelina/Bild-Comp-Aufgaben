@@ -71,9 +71,7 @@ def calculate_fundamental_matrix(points1, points2):
     inlier_points2 = points2[inliers.ravel() == 1]
     return fundamental_matrix, inlier_points1, inlier_points2
 
-
 def visualize_epilines(image1, image2, points1, points2, fundamental_matrix):
-    # based on https://github.com/keckluis/BildCompAufgaben/blob/main/Aufgabe3/DepthMapEstimation.py
     def drawlines(img1src, img2src, lines, pts1src, pts2src):
         r, c = img1src.shape
         img1color = cv.cvtColor(img1src, cv.COLOR_GRAY2BGR)
@@ -153,20 +151,32 @@ def stereo_disparity_map(image1, image2):
 def disparity_map(reference_image, image_list):
     disparity_maps = []
     for image in image_list:
-        disparity_maps.append(stereo_disparity_map(reference_image, image))
-
+        disparity_map, _ = stereo_disparity_map(reference_image, image)
+        disparity_maps.append(disparity_map)
     #TODO
     # get baselines from the fundamental matrices
     # normalize using the baselines (line between the two camera centers) to get the value of the pixel in different pictures. 
     # Those should be the same after normalization. Use Reference as ground truth
-    # Then add all normalized disparity maps together
-    # done
-    #TODO
+    final_disparity_map = np.zeros_like(disparity_maps[0])
+    for disparity_map in disparity_maps:
+        final_disparity_map += disparity_map
+    final_disparity_map = final_disparity_map/len(disparity_maps)
+    final_disparity_map = cv.normalize(final_disparity_map, final_disparity_map, alpha=255, beta=0, norm_type=cv.NORM_MINMAX)
+    final_disparity_map = np.around(final_disparity_map).astype(np.uint64)
+    cv.imwrite("generated/disparity_map_normalized.png", final_disparity_map)
+    return final_disparity_map
     
 
 if __name__ == "__main__":
     image_list = []
-    reference_image = cv.imread("images/left.jpg", cv.IMREAD_GRAYSCALE)
-    image_list.append(cv.imread("images/middle.jpg", cv.IMREAD_GRAYSCALE))
-    image_list.append(cv.imread("images/right.jpg", cv.IMREAD_GRAYSCALE))
+    reference_image = cv.imread("images/tsukuba01.jpg", cv.IMREAD_GRAYSCALE)
+    image_list.append(cv.imread("images/tsukuba02.jpg", cv.IMREAD_GRAYSCALE))
+    image_list.append(cv.imread("images/tsukuba03.jpg", cv.IMREAD_GRAYSCALE))
+    image_list.append(cv.imread("images/tsukuba04.jpg", cv.IMREAD_GRAYSCALE))
+    image_list.append(cv.imread("images/tsukuba05.jpg", cv.IMREAD_GRAYSCALE))
     disparity_map(reference_image, image_list)
+    #image1 = cv.imread("images/tsukuba01.jpg", cv.IMREAD_GRAYSCALE)
+    #image2 = cv.imread("images/tsukuba04.jpg", cv.IMREAD_GRAYSCALE)
+    #stereo_disparity_map(image1, image2)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
