@@ -2,10 +2,43 @@
 # https://www.andreasjakl.com/easily-create-depth-maps-with-smartphone-ar-part-1/
 # https://www.andreasjakl.com/understand-and-apply-stereo-rectification-for-depth-maps-part-2/
 # https://www.andreasjakl.com/how-to-apply-stereo-matching-to-generate-depth-maps-part-3/
-
+import exifread
 import numpy as np
 import cv2 as cv
 import matplotlib.pyplot as plt
+
+
+def get_fraction(text):
+    split = text.split('/')
+    num_one = 0
+    num_two = 0
+    try:
+        num_one = float(split[0])
+        num_two = float(split[1])
+    except Exception as e:
+        print(e, ": der String kann nicht in einen Bruch konvertiert werden")
+    return num_one / num_two
+
+
+def get_focal_length(path):
+    # Open an jpg image file in order to read out the exif data
+    file_name = path
+    # The "rb" mode opens the file in binary format for reading
+    f = open(file_name, 'rb')
+
+    # Get all Exif tags
+    tags = exifread.process_file(f, details=False)
+
+    # Read the EXIF FocalLength tag and compute the value from it
+    for tag in tags:
+        if tag in 'EXIF FocalLength':
+            print("tag", tag)
+            print("Key:", tag, "value:", tags[tag])
+            focalLength_mm = get_fraction(tags[tag].__str__())
+            # print the computed focal length as float value
+            print("focalLength in mm: ", focalLength_mm)
+    # Close the file
+    f.close()
 
 
 def detect_keypoints(image1, image2):
@@ -178,6 +211,7 @@ def disparity_map(reference_image, image_list):
         disparity_map, _ = stereo_disparity_map(reference_image, image)
         disparity_maps.append(disparity_map)
     # TODO
+    # depth = baseline * focal / disparity
     # get baselines from the fundamental matrices
     # normalize using the baselines (line between the two camera centers) to get the value of the pixel in different pictures. 
     # Those should be the same after normalization. Use Reference as ground truth
