@@ -153,7 +153,10 @@ def disparity_map(reference_image, image_list):
     for image in image_list:
         disparity_map, _ = stereo_disparity_map(reference_image, image)
         disparity_maps.append(disparity_map)
-    #normalize all disparity maps to ground truth of reference image
+    #TODO
+    # get baselines from the fundamental matrices
+    # normalize using the baselines (line between the two camera centers) to get the value of the pixel in different pictures. 
+    # Those should be the same after normalization. Use Reference as ground truth
     final_disparity_map = np.zeros_like(disparity_maps[0])
     for disparity_map in disparity_maps:
         final_disparity_map += disparity_map
@@ -162,14 +165,6 @@ def disparity_map(reference_image, image_list):
     final_disparity_map = np.around(final_disparity_map).astype(np.uint64)
     cv.imwrite("generated/disparity_map_normalized.png", final_disparity_map)
     return final_disparity_map
-
-    #TODO
-    # get baselines from the fundamental matrices
-    # normalize using the baselines (line between the two camera centers) to get the value of the pixel in different pictures. 
-    # Those should be the same after normalization. Use Reference as ground truth
-    # Then add all normalized disparity maps together
-    # done
-    #TODO
     
 
 if __name__ == "__main__":
@@ -180,9 +175,8 @@ if __name__ == "__main__":
     image_list.append(cv.imread("images/tsukuba04.jpg", cv.IMREAD_GRAYSCALE))
     image_list.append(cv.imread("images/tsukuba05.jpg", cv.IMREAD_GRAYSCALE))
     disparity_map(reference_image, image_list)
-    
-    
     #image1 = cv.imread("images/tsukuba01.jpg", cv.IMREAD_GRAYSCALE)
     #image2 = cv.imread("images/tsukuba04.jpg", cv.IMREAD_GRAYSCALE)
     #stereo_disparity_map(image1, image2)
-    #cv.waitKey(0)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
