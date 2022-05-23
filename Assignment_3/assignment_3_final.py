@@ -122,11 +122,11 @@ def calculate_disparity_map(image1_rectified, image2_rectified):
     # and: https://docs.opencv.org/master/dd/d53/tutorial_py_depthmap.html
     stereo = cv.StereoSGBM_create(minDisparity=0,
                                    numDisparities=64,
-                                   blockSize=8,
+                                   blockSize=4,
                                    disp12MaxDiff=1,
                                    uniquenessRatio=10,
-                                   speckleWindowSize=10,
-                                   speckleRange=8)
+                                   speckleWindowSize=100,
+                                   speckleRange=2)
     image_disparity_map = stereo.compute(image1_rectified, image2_rectified)
     # Normalize the values to a range from 0..255 for a grayscale image
     image_disparity_map = cv.normalize(image_disparity_map, image_disparity_map, alpha=255,
