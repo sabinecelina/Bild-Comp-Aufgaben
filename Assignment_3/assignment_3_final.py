@@ -73,7 +73,6 @@ def calculate_fundamental_matrix(points1, points2):
 
 
 def visualize_epilines(image1, image2, points1, points2, fundamental_matrix):
-    # based on https://github.com/keckluis/BildCompAufgaben/blob/main/Aufgabe3/DepthMapEstimation.py
     def drawlines(img1src, img2src, lines, pts1src, pts2src):
         r, c = img1src.shape
         img1color = cv.cvtColor(img1src, cv.COLOR_GRAY2BGR)
@@ -154,7 +153,7 @@ def disparity_map(reference_image, image_list):
     disparity_maps = []
     for image in image_list:
         disparity_maps.append(stereo_disparity_map(reference_image, image))
-
+    
     #TODO
     # get baselines from the fundamental matrices
     # normalize using the baselines (line between the two camera centers) to get the value of the pixel in different pictures. 
