@@ -10,13 +10,13 @@ Python: 3.9 <br>
 Opencv: 4.5.5 <br>
 Open3D: 0.15 <br>
 
+Here is a quick installation guide for open3d:
+http://www.open3d.org/docs/release/getting_started.html
+
 ### Libaries needed
 
 install matplotlib <br>
 install joblib
-
-Here is a quick installation guide for open3d:
-http://www.open3d.org/docs/release/getting_started.html
 
 ### This tutorial is inspired from
 
