@@ -28,12 +28,7 @@ For this tutorial a recorded .mkv file is needed. This .mkv file is generated wi
 installation guide if you want to record your own file.
 http://www.open3d.org/docs/latest/tutorial/Basic/azure_kinect.html
 
-In the folder
-
-```python examples/python/ReconstructionSystem/sensors/
-```
-
-you can run the script ```azure_kinect_recorder.py``` with the command
+In the folder ```python examples/python/ReconstructionSystem/sensors/``` you can run the script ```azure_kinect_recorder.py``` with the command
 
 ```python
 python examples/python/ReconstructionSystem/sensors/azure_kinect_recorder.py --output
