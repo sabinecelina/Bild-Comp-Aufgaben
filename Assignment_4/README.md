@@ -30,15 +30,13 @@ http://www.open3d.org/docs/latest/tutorial/Basic/azure_kinect.html
 
 In the folder
 
-```python
-examples / python / ReconstructionSystem / sensors /
+```python examples/python/ReconstructionSystem/sensors/
 ```
 
 you can run the script ```azure_kinect_recorder.py``` with the command
 
 ```python
-python
-examples / python / ReconstructionSystem / sensors / azure_kinect_recorder.py - -output
+python examples/python/ReconstructionSystem/sensors/azure_kinect_recorder.py --output
 record.mkv
 ```
 
@@ -49,10 +47,7 @@ If you stop the recording the file is saved in the same folder like above.
 To extract the depth and color map from every frame of the file you can use the command from the sensor folder
 
 ```python
-python
-azure_kinect_mkv_reader.py - -input
-record.mkv - -output
-frames
+python azure_kinect_mkv_reader.py --input record.mkv --output frames
 ```
 
 This will generate a folder named frames where the depth and color map is stored for every frame.
@@ -72,7 +67,7 @@ cd examples/python/reconstruction_system/python run_system.py[config_file][--mak
 
 ```python
 python
-run_system.py "sensors/frames/config.json" - -make
+run_system.py "sensors/frames/config.json" --make
 ```
 
 This command creates two files:
@@ -95,7 +90,7 @@ Once the fragments of the scene are created, the next step is to align them in a
 
 ```python
 python
-run_system.py "sensors/frames/config.json" - -register
+run_system.py "sensors/frames/config.json" --register
 ```
 
 ### [--refine]
@@ -105,7 +100,7 @@ registration on the pairs detected by Register fragments. The second function pe
 
 ```python
 python
-run_system.py "sensors/frames/config.json" - -refine
+run_system.py "sensors/frames/config.json" --refine
 ```
 
 ### [-- integrate]
